@@ -356,13 +356,14 @@ func (s *AppsService) GetBuildIDForAppStoreVersion(ctx context.Context, id strin
 // UpdateBuildForAppStoreVersion changes the build that is attached to a specific App Store version.
 //
 // https://developer.apple.com/documentation/appstoreconnectapi/modify_the_build_for_an_app_store_version
-func (s *AppsService) UpdateBuildForAppStoreVersion(ctx context.Context, id string, buildID *string) (*AppStoreVersionBuildLinkageResponse, *Response, error) {
-	linkage := newRelationshipDeclaration(buildID, "builds")
+func (s *AppsService) UpdateBuildForAppStoreVersion(ctx context.Context, id string, buildID *string) (*Response, error) {
+	linkage := &RelationshipData{
+		ID:   *buildID,
+		Type: "builds",
+	}
 	url := fmt.Sprintf("appStoreVersions/%s/relationships/build", id)
-	res := new(AppStoreVersionBuildLinkageResponse)
-	resp, err := s.client.patch(ctx, url, newRequestBody(linkage), res)
-
-	return res, resp, err
+	resp, err := s.client.patch(ctx, url, newRequestBody(linkage), nil)
+	return resp, err
 }
 
 // UnmarshalJSON is a custom unmarshaller for the heterogenous data stored in AppStoreVersionResponseIncluded.
