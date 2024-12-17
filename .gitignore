@@ -28,3 +28,5 @@ vendor/
 Thumbs.db
 .DS_Store
 *.swp
+
+/.idea/
