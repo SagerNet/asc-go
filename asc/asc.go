@@ -336,6 +336,14 @@ func (c *Client) newRequest(ctx context.Context, method string, path string, bod
 }
 
 func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) (*Response, error) {
+	resp, err := c.do0(ctx, req, v)
+	for resp != nil && resp.StatusCode == http.StatusInternalServerError {
+		resp, err = c.do0(ctx, req, v)
+	}
+	return resp, err
+}
+
+func (c *Client) do0(ctx context.Context, req *http.Request, v interface{}) (*Response, error) {
 	respCh := make(chan *http.Response, 1)
 	op := func() error {
 		if c.httpDebug {
